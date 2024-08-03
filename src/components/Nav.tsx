@@ -1,66 +1,78 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { User } from '../models/user';
+import { connect, ConnectedProps } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { clearUser } from '../redux/actions/setUserAction'; // Import clearUser action
 
-const Nav = () => {
+const mapStateToProps = (state: { user: User }) => ({
+  user: state.user
+});
+
+const mapDispatchToProps = {
+  clearUser
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+const Nav: React.FC<PropsFromRedux> = ({ user, clearUser }) => {
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/logout'); // Ensure this endpoint clears the user session
+      clearUser(); // Clear user state in Redux
+      setIsLoggedOut(true); // Trigger navigation after state update
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoggedOut) {
+      navigate('/'); // Redirect to the main page
+    }
+  }, [isLoggedOut, navigate]);
+
   return (
-    <div>
-           <header data-bs-theme="dark">
-        <div className="collapse text-bg-dark" id="navbarHeader">
-          <div className="container">
-            <div className="row">
-              <div className="col-sm-8 col-md-7 py-4">
-                <h4>About</h4>
-                <p className="text-body-secondary">
-                  Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.
-                </p>
-              </div>
-              <div className="col-sm-4 offset-md-1 py-4">
-                <h4>Contact</h4>
-                <ul className="list-unstyled">
-                  <li><a href="#" className="text-white">Follow on Twitter</a></li>
-                  <li><a href="#" className="text-white">Like on Facebook</a></li>
-                  <li><a href="#" className="text-white">Email me</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="navbar navbar-dark bg-dark shadow-sm">
-          <div className="container">
-            <a href="#" className="navbar-brand d-flex align-items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                aria-hidden="true"
-                className="me-2"
-                viewBox="0 0 24 24"
+    <div className="container">
+      <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+          <li>
+            <Link to="/" className="nav-link px-2 link-secondary">Frontend</Link>
+          </li>
+          <li>
+            <Link to="/backend" className="nav-link px-2">Backend</Link>
+          </li>
+        </ul>
+
+        <div className="col-md-3 text-end">
+          {user && user.first_name ? (
+            <>
+              <button 
+                type="button" 
+                className="btn btn-outline-primary me-2"
+                onClick={handleLogout}
               >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-              <strong>Album</strong>
-            </a>
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarHeader"
-              aria-controls="navbarHeader"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-          </div>
+                Logout
+              </button>
+              <Link to="/profile" className="btn btn-primary">
+                {user.first_name} {user.last_name}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline-primary me-2">Login</Link>
+              <Link to="/register" className="btn btn-primary">Sign-up</Link>
+            </>
+          )}
         </div>
       </header>
     </div>
-  )
-}
+  );
+};
 
-export default Nav;
+export default connector(Nav);

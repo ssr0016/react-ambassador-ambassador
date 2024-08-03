@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Nav from './Nav';
 import Header from './Header';
-import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setUser } from '../redux/actions/setUserAction';
 import { Dispatch } from 'redux';
@@ -15,7 +14,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ setUser, children }) => {
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,12 +22,11 @@ const Layout: React.FC<LayoutProps> = ({ setUser, children }) => {
         setUser(data);
       } catch (error) {
         console.error('Error fetching user data:', error);
-        navigate('/login'); // Redirect to the login page if there's an error
       }
     };
 
     fetchUserData();
-  }, [navigate, setUser]);
+  }, [setUser]); // Ensure this runs only when `setUser` changes
 
   return (
     <div>
