@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { clearUser } from '../redux/actions/setUserAction'; // Import clearUser action
 
-const mapStateToProps = (state: { user: User, }) => ({
+const mapStateToProps = (state: { user: User }) => ({
   user: state.user,
 });
 
@@ -38,7 +38,7 @@ const Nav: React.FC<PropsFromRedux> = ({ user, clearUser }) => {
 
   return (
     <div className="container">
-      <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+      <header className="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
         <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
           <li>
             <Link to="/" className="nav-link px-2 link-secondary">Frontend</Link>
@@ -48,24 +48,26 @@ const Nav: React.FC<PropsFromRedux> = ({ user, clearUser }) => {
           </li>
         </ul>
 
-        <div className="col-md-3 text-end">
+        <div className="col-md-4 text-end d-flex align-items-center justify-content-end">
           {user && user.first_name ? (
             <>
+              <Link to="/stats" className="btn  btn-custom">Stats</Link>
+              <Link to="/rankings" className="btn  btn-custom">Rankings</Link>
               <button 
                 type="button" 
-                className="btn btn-outline-primary me-2"
+                className="btn btn-outline-primary me-2 btn-custom"
                 onClick={handleLogout}
               >
                 Logout
               </button>
-              <Link to="/profile" className="btn btn-primary">
+              <Link to="/profile" className="btn btn-primary me-2 btn-custom">
                 {user.first_name} {user.last_name}
               </Link>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn btn-outline-primary me-2">Login</Link>
-              <Link to="/register" className="btn btn-primary">Sign-up</Link>
+              <Link to="/login" className="btn btn-outline-primary me-2 btn-custom">Login</Link>
+              <Link to="/register" className="btn btn-primary btn-custom">Sign-up</Link>
             </>
           )}
         </div>
