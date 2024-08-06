@@ -6,6 +6,7 @@ import { setUser } from '../redux/actions/setUserAction';
 import { Dispatch } from 'redux';
 import axios from 'axios';
 import { User } from '../models/user';
+import { useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   setUser: (user: User) => void;
@@ -14,6 +15,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ setUser, children }) => {
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -28,11 +30,17 @@ const Layout: React.FC<LayoutProps> = ({ setUser, children }) => {
     fetchUserData();
   }, [setUser]); // Ensure this runs only when `setUser` changes
 
+  let header;
+
+  if (location.pathname === '/' || location.pathname === '/backend') {
+    header = <Header />;
+  }
+
   return (
     <div>
       <Nav />
       <main>
-        <Header />
+        {header}
         <div className="album py-5 bg-body-tertiary">
           <div className="container">
             {children}

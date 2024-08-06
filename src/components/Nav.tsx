@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../models/user';
 import { connect, ConnectedProps } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { clearUser } from '../redux/actions/setUserAction'; // Import clearUser action
 
-const mapStateToProps = (state: { user: User }) => ({
-  user: state.user
+const mapStateToProps = (state: { user: User, }) => ({
+  user: state.user,
 });
 
 const mapDispatchToProps = {
-  clearUser
+  clearUser,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -19,13 +19,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const Nav: React.FC<PropsFromRedux> = ({ user, clearUser }) => {
   const [isLoggedOut, setIsLoggedOut] = useState(false);
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await axios.post('/logout'); // Ensure this endpoint clears the user session
       clearUser(); // Clear user state in Redux
-      setIsLoggedOut(true); // Trigger navigation after state update
+      setIsLoggedOut(true); // Trigger state update after logout
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -33,9 +32,9 @@ const Nav: React.FC<PropsFromRedux> = ({ user, clearUser }) => {
 
   useEffect(() => {
     if (isLoggedOut) {
-      navigate('/'); // Redirect to the main page
+      window.location.href = '/'; // Redirect to the main page
     }
-  }, [isLoggedOut, navigate]);
+  }, [isLoggedOut]);
 
   return (
     <div className="container">
